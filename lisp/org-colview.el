@@ -991,7 +991,7 @@ display, or in the #+COLUMNS line of the current buffer."
 	(cond
 	 ((< level last-level)
 	  ;; put the sum of lower levels here as a property
-	  (setq sum (+ (if (and (/= last-level inminlevel)
+	  (setq sum (funcall fun (if (and (/= last-level inminlevel)
 				(aref lvals last-level))
 			   (apply fun (aref lvals last-level)) 0)
 		       (if (aref lvals inminlevel)
@@ -1562,7 +1562,9 @@ and variances (respectively) of the individual estimates."
   (let ((mean 0)
         (var 0))
     (mapc (lambda (e)
-	    (let ((stats (org-estimate-mean-and-var e)))
+	    (let* ((e1 (if (listp e) e
+			'(e e)))
+		   (stats (org-estimate-mean-and-var e1)))
 	      (setq mean (+ mean (car stats)))
 	      (setq var (+ var (cadr stats)))))
 	  el)
@@ -1573,7 +1575,9 @@ and variances (respectively) of the individual estimates."
   "Prepare a string representation of an estimate.
 This formats these numbers as two numbers with a \"-\" between them."
   (if (null fmt) (set 'fmt "%.0f"))
-  (format "%s" (mapconcat (lambda (n) (format fmt n))  e "-")))
+  (if (sequencep e)
+      (format "%s" (mapconcat (lambda (n) (format fmt n))  e "-"))
+    (format "%s" e)))
 
 (defun org-string-to-estimate (s)
   "Convert a string to an estimate.
