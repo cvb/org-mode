@@ -15207,7 +15207,7 @@ Being in this list makes sure that they are offered for completion.")
   (org-set-effort nil t))
 
 (defvar org-clock-effort)       ;; Defined in org-clock.el
-(defvar org-clock-current-task) ;; Defined in org-clock.el
+(defvar org-clock-current-task nil) ;; Defined in org-clock.el
 (defun org-set-effort (&optional value increment)
   "Set the effort property of the current entry.
 With numerical prefix arg, use the nth allowed value, 0 stands for the
@@ -15257,7 +15257,8 @@ When INCREMENT is non-nil, set the property to the next allowed value."
       (put-text-property (point-at-bol) (point-at-eol) 'org-effort val))
     (when (string= heading org-clock-current-task)
       (setq org-clock-effort (get-text-property (point-at-bol) 'org-effort))
-      (org-clock-update-mode-line))
+      (if (fboundp 'org-clock-update-mode-line)
+	  (org-clock-update-mode-line)))
     (message "%s is now %s" prop val)))
 
 (defun org-at-property-p ()
@@ -16037,7 +16038,8 @@ completion."
 	(put-text-property (point-at-bol) (point-at-eol) 'org-effort nval))
       (when (string= org-clock-current-task heading)
 	(setq org-clock-effort nval)
-	(org-clock-update-mode-line)))
+	(if (fboundp 'org-clock-update-mode-line)
+	    (org-clock-update-mode-line))))
     (run-hook-with-args 'org-property-changed-functions key nval)))
 
 (defun org-find-olp (path &optional this-buffer)
